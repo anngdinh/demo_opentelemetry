@@ -1,16 +1,14 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+	// "encoding/json"
 	"log"
 
 	"github.com/gin-gonic/gin"
-	resty "github.com/go-resty/resty/v2"
+	// resty "github.com/go-resty/resty/v2"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
-
 	// "go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -24,11 +22,13 @@ import (
 type Result struct {
 	Message string
 }
+
 const (
-	service     = "trace-demo"
+	service     = "trace-factorial"
 	environment = "production"
-	id          = 1
+	id          = 2
 )
+
 func TracerProvider() (*tracesdk.TracerProvider, error) {
 	url := "http://allinone:14268/api/traces"
 	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(url)))
@@ -56,34 +56,19 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	resty := resty.New()
-
 	router := gin.Default()
-	router.Use(otelgin.Middleware("microservice-1"))
+	router.Use(otelgin.Middleware("microservice-2"))
 	{
-
-		router.GET("/ping", func(c *gin.Context) {
-			result := Result{}
-			req := resty.R().SetHeader("Content-Type", "application/json")
-			ctx := req.Context()
-			span := trace.SpanFromContext(ctx)
-
+		router.GET("/pong", func(c *gin.Context) {
+			ctx := c.Request.Context()
+			span := trace.SpanFromContext(otel.GetTextMapPropagator().Extract(ctx, propagation.HeaderCarrier(c.Request.Header)))
 			defer span.End()
 
-			otel.GetTextMapPropagator().Inject(c.Request.Context(), propagation.HeaderCarrier(req.Header))
-			resp, err := req.Get("http://factorial_als:8088/pong")
-
-			if err != nil {
-				fmt.Println("---------error get /pong-----------")
-				// log.Fatal(err)
-			}
-
-			json.Unmarshal([]byte(resp.String()), &result)
 			c.IndentedJSON(200, gin.H{
-				"message": result.Message,
+				"message": "pong",
 			})
 		})
 	}
-	router.Run(":8080")
+	router.Run(":8088")
 
 }

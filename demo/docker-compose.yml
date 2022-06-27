@@ -8,50 +8,71 @@ networks:
 
 services:
   
-  api:
-    build:
-      context: ./api
-    stdin_open: true
-    tty: true
-    ports:
-      - 8081:8081
-    networks:
-      public:
-        aliases:
-          - api_public
-      local:
-        aliases:
-          - api_local
-    depends_on:
-      - jaeger-allinone
-      - db
-      # - jaeger-collector
-      # - jaeger-agent
-      # - jaeger-query
-  
-  # client:
+  # api:
   #   build:
-  #     context: ./client
+  #     context: ./api
   #   stdin_open: true
   #   tty: true
   #   ports:
-  #     - 8080:8080
-  #   environment:
-  #     - JAEGER_AGENT_HOST=allinone
-  #     - JAEGER_AGENT_PORT=6831
+  #     - 8081:8081
+  #   networks:
+  #     public:
+  #       aliases:
+  #         - api_public
+  #     local:
+  #       aliases:
+  #         - api_local
   #   depends_on:
-  #     # - factorial
   #     - jaeger-allinone
-  #     - api
-  #     # - db
+  #     - db
   #     # - jaeger-collector
   #     # - jaeger-agent
   #     # - jaeger-query
-  #   networks:
-  #     local:
-  #       aliases:
-  #         - client
-  #   restart: always
+  
+  client:
+    build:
+      context: ./client
+    stdin_open: true
+    tty: true
+    ports:
+      - 8080:8080
+    environment:
+      - JAEGER_AGENT_HOST=allinone
+      - JAEGER_AGENT_PORT=6831
+    depends_on:
+      - factorial
+      - jaeger-allinone
+      # - api
+      # - db
+      # - jaeger-collector
+      # - jaeger-agent
+      # - jaeger-query
+    networks:
+      public:
+        aliases:
+          - client
+    restart: always
+  
+  factorial:
+    build:
+      context: ./factorial
+    stdin_open: true
+    tty: true
+    ports:
+      - 8088:8088
+    depends_on:
+      # - factorial
+      - jaeger-allinone
+      # - api
+      # - db
+      # - jaeger-collector
+      # - jaeger-agent
+      # - jaeger-query
+    networks:
+      public:
+        aliases:
+          - factorial_als
+    restart: always
 
   jaeger-allinone:
     image: jaegertracing/all-in-one:latest
@@ -59,25 +80,25 @@ services:
       - "6831:6831/udp"
       - "16686:16686"
     networks:
-      local:
+      public:
         aliases:
           - allinone
   
 
-  db:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: go_database
-      MYSQL_USER: go_test
-      MYSQL_PASSWORD: password
-      # TZ: 'Asia/Tokyo'
-    # command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-    # volumes:
-    #   - db-data:/var/lib/mysql
-    #   - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
-    restart: always                                         # if error, restart
-    networks:
-      - local
+  # db:
+  #   image: mysql:8.0
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: root
+  #     MYSQL_DATABASE: go_database
+  #     MYSQL_USER: go_test
+  #     MYSQL_PASSWORD: password
+  #     # TZ: 'Asia/Tokyo'
+  #   # command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+  #   # volumes:
+  #   #   - db-data:/var/lib/mysql
+  #   #   - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
+  #   restart: always                                         # if error, restart
+  #   networks:
+  #     - local
 
   
