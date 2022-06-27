@@ -5,10 +5,10 @@ import (
 	"time"
 	// "html"
 	// "log"
-	// "net/http"
 	"database/sql"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
+	"net/http"
 )
 
 type User struct {
@@ -40,10 +40,32 @@ func GetAllUser(ctx *gin.Context) {
 	}
 	fmt.Println(users)
 
-	ctx.JSON(200, gin.H{"name": users[0].name, "email": users[0].email})
-	ctx.JSON(200, gin.H{"name": users[0].name, "email": users[0].email})
-}
+	for _, user := range users {
+		ctx.JSON(200, gin.H{"name": user.name, "email": user.email})
+	}
 
+	// ctx.JSON(200, gin.H{"name": users[0].name, "email": users[0].email})
+	// ctx.JSON(200, gin.H{"name": users[0].name, "email": users[0].email})
+}
+func AddUser(ctx *gin.Context) {
+	name := ctx.Param("name")
+	email := ctx.Param("email")
+
+	db := sqlConnect()
+	defer db.Close()
+
+	query := "INSERT INTO Users VALUES ( '" + name + "', '" + email + "' )"
+
+	_, err := db.Query(query)
+	if err != nil {
+		fmt.Println("\n--------------- ERROR AddUser -------------\n")
+		// return err
+		panic(err.Error())
+	} else {
+		ctx.String(http.StatusOK, query)
+	}
+	// return nil
+}
 func main() {
 	db := sqlConnect()
 	_, err := db.Query("CREATE TABLE Users (name VARCHAR(255), email VARCHAR(255))")
@@ -60,6 +82,8 @@ func main() {
 
 	router.GET("/test", test)
 	router.GET("/", GetAllUser)
+
+	router.POST("/user/:name/:email", AddUser)
 
 	router.Run(":8081")
 

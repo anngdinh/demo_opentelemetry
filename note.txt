@@ -12,5 +12,4 @@
 	- viết 1 cái crud cho 1 cái db = mysql
 	- viết 1 cái service bên java
 	
-	
-	
+- concurrent worker khi request toi thi sao nhi?
