@@ -18,3 +18,4 @@
 https://github.com/open-telemetry/opentelemetry-go-contrib/tree/main/instrumentation/github.com/gin-gonic/gin/otelgin/example
 https://github.com/open-telemetry/opentelemetry-go/discussions/2629
 
+mvn spring-boot:run
