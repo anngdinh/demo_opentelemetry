@@ -8,10 +8,13 @@ spring:
     name: customer-service
 
   sleuth:
-    otel:
-      exporter:
-        otlp:
-          endpoint: http://collector:4317
+    # otel:
+    #   exporter:
+    #     otlp:
+    #       endpoint: http://collector:6831
+    jaeger:
+      http-sender:
+        url: http://localhost:14268/api/traces
 
 management:
   endpoint:

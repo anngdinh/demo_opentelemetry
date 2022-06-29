@@ -5,12 +5,12 @@
 - có thêm cái baggage
 - đọc code hiện thực, làm rõ các struct provider, ...
 - đề ra kịch bản demo đủ các tiêu chuẩn trên trước khi bắt tay vào làm.
-
+- Làm rõ giữa các collector: của jaeger, opentelemetry, logz.io, sentry, ...
 
 
 - kịch bản demo của mình:
 	- viết 1 cái crud cho 1 cái db = mysql
-	- viết 1 cái service bên java
+	- viết 1 cái service bên java: goi golang -> java -> golang.
 	
 - concurrent worker khi request toi thi sao nhi?
 
