@@ -11,6 +11,9 @@
 - kịch bản demo của mình:
 	- viết 1 cái crud cho 1 cái db = mysql
 	- viết 1 cái service bên java: goi golang -> java -> golang.
+
+	- co 1 api golang goi toi database mysql
+	- co 1 api spring goi toi 1 cai db ao va 1 cai factorial (golang)
 	
 - concurrent worker khi request toi thi sao nhi?
 
@@ -19,3 +22,5 @@ https://github.com/open-telemetry/opentelemetry-go-contrib/tree/main/instrumenta
 https://github.com/open-telemetry/opentelemetry-go/discussions/2629
 
 mvn spring-boot:run
+
+
