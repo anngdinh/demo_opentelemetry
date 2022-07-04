@@ -71,7 +71,7 @@ func main() {
 			defer span.End()
 
 			otel.GetTextMapPropagator().Inject(c.Request.Context(), propagation.HeaderCarrier(req.Header))
-			resp, err := req.Get("http://factorial_als:8088/pong")
+			resp, err := req.Get("http://java_als:8000/test")
 
 			if err != nil {
 				fmt.Println("---------error get /pong-----------")

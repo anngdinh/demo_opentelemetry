@@ -33,3 +33,8 @@ Hiện tại là dư lày:
 - service java thì chưa làm được, mới chỉ dùng automatic thôi, cách này thì có thể bắt được các request nhưng bị 1 hạn chế là sẽ không bắt được các sevice chạy sau đó. Nghĩa là khi 1 cái service spring boot gọi 1 request gọi tới 1 cái service khác thì mình chưa truyền được context, baggage các thứ làm cho cái đường trace bị dừng lại và k bắt được các cái sau đó. Mình phải implement bằng cơm thì mới làm được điều đó, sau đó tích hợp vào spring boot sau.
 
 - Hỏi anh Vũ về định hướng sử dụng của bên mình, sẽ sử dụng collector, db, cuả bên nào, ...
+
+
+
+13:41 19%
+14:22 51%
