@@ -7,7 +7,7 @@ networks:
     driver: bridge
 
 services:
-  
+
   # api:
   #   build:
   #     context: ./api
@@ -28,61 +28,61 @@ services:
   #     # - jaeger-collector
   #     # - jaeger-agent
   #     # - jaeger-query
-  
-  client:
-    build:
-      context: ./client
-    stdin_open: true
-    tty: true
-    ports:
-      - 8080:8080
-    environment:
-      - JAEGER_AGENT_HOST=allinone
-      - JAEGER_AGENT_PORT=6831
-    depends_on:
-      - factorial
-      - jaeger-allinone
-      # - api
-      # - db
-      # - jaeger-collector
-      # - jaeger-agent
-      # - jaeger-query
-    networks:
-      public:
-        aliases:
-          - client
-    restart: always
 
-  service1:
-    build: java/java_svc/
-    image: spring_jaeger:latest
-    ports:
-      - "8081:8080"
-    networks:
-      public:
-        aliases:
-          - service1
-  
-  factorial:
-    build:
-      context: ./factorial
-    stdin_open: true
-    tty: true
-    ports:
-      - 8088:8088
-    depends_on:
-      # - factorial
-      - jaeger-allinone
-      # - api
-      # - db
-      # - jaeger-collector
-      # - jaeger-agent
-      # - jaeger-query
-    networks:
-      public:
-        aliases:
-          - factorial_als
-    restart: always
+  # client:
+  #   build:
+  #     context: ./client
+  #   stdin_open: true
+  #   tty: true
+  #   ports:
+  #     - 8080:8080
+  #   environment:
+  #     - JAEGER_AGENT_HOST=allinone
+  #     - JAEGER_AGENT_PORT=6831
+  #   depends_on:
+  #     - factorial
+  #     - jaeger-allinone
+  #     # - api
+  #     # - db
+  #     # - jaeger-collector
+  #     # - jaeger-agent
+  #     # - jaeger-query
+  #   networks:
+  #     public:
+  #       aliases:
+  #         - client
+  #   restart: always
+
+  # service1:
+  #   build: java/java_svc/
+  #   image: spring_jaeger:latest
+  #   ports:
+  #     - "8081:8080"
+  #   networks:
+  #     public:
+  #       aliases:
+  #         - service1
+
+  # factorial:
+  #   build:
+  #     context: ./factorial
+  #   stdin_open: true
+  #   tty: true
+  #   ports:
+  #     - 8088:8088
+  #   depends_on:
+  #     # - factorial
+  #     - jaeger-allinone
+  #     # - api
+  #     # - db
+  #     # - jaeger-collector
+  #     # - jaeger-agent
+  #     # - jaeger-query
+  #   networks:
+  #     public:
+  #       aliases:
+  #         - factorial_als
+  #   restart: always
 
   jaeger-allinone:
     image: jaegertracing/all-in-one:latest
@@ -94,7 +94,19 @@ services:
       public:
         aliases:
           - allinone
-  
+
+  my-test:
+    container_name: application
+    build:
+      context: java/my-test
+      dockerfile: Dockerfile
+    image: application:latest
+    ports:
+      - 8082:8080
+    networks:
+      public:
+        aliases:
+          - java_als
 
   # db:
   #   image: mysql:8.0
@@ -112,4 +124,3 @@ services:
   #   networks:
   #     - local
 
-  

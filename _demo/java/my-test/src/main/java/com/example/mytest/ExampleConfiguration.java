@@ -29,7 +29,7 @@ class ExampleConfiguration {
    */
   static OpenTelemetry initOpenTelemetry() {
     // Export traces to Jaeger
-    String jaegerEndpoint = "http://localhost:14250";
+    String jaegerEndpoint = "http://allinone:14250";
     JaegerGrpcSpanExporter jaegerExporter =
         JaegerGrpcSpanExporter.builder()
             .setEndpoint(jaegerEndpoint)
