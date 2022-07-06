@@ -29,29 +29,29 @@ services:
   #     # - jaeger-agent
   #     # - jaeger-query
 
-  client:
-    build:
-      context: ./client
-    stdin_open: true
-    tty: true
-    ports:
-      - 8080:8080
-    environment:
-      - JAEGER_AGENT_HOST=allinone
-      - JAEGER_AGENT_PORT=6831
-    depends_on:
-      # - factorial
-      - jaeger-allinone
-      # - api
-      # - db
-      # - jaeger-collector
-      # - jaeger-agent
-      # - jaeger-query
-    networks:
-      public:
-        aliases:
-          - client
-    restart: always
+  # client:
+  #   build:
+  #     context: ./client
+  #   stdin_open: true
+  #   tty: true
+  #   ports:
+  #     - 8080:8080
+  #   environment:
+  #     - JAEGER_AGENT_HOST=allinone
+  #     - JAEGER_AGENT_PORT=6831
+  #   depends_on:
+  #     # - factorial
+  #     - jaeger-allinone
+  #     # - api
+  #     # - db
+  #     # - jaeger-collector
+  #     # - jaeger-agent
+  #     # - jaeger-query
+  #   networks:
+  #     public:
+  #       aliases:
+  #         - client
+  #   restart: always
 
   # service1:
   #   build: java/java_svc/
@@ -63,26 +63,26 @@ services:
   #       aliases:
   #         - service1
 
-  factorial:
-    build:
-      context: ./factorial
-    stdin_open: true
-    tty: true
-    ports:
-      - 8088:8088
-    depends_on:
-      # - factorial
-      - jaeger-allinone
-      # - api
-      # - db
-      # - jaeger-collector
-      # - jaeger-agent
-      # - jaeger-query
-    networks:
-      public:
-        aliases:
-          - factorial_als
-    restart: always
+  # factorial:
+  #   build:
+  #     context: ./factorial
+  #   stdin_open: true
+  #   tty: true
+  #   ports:
+  #     - 8088:8088
+  #   depends_on:
+  #     # - factorial
+  #     - jaeger-allinone
+  #     # - api
+  #     # - db
+  #     # - jaeger-collector
+  #     # - jaeger-agent
+  #     # - jaeger-query
+  #   networks:
+  #     public:
+  #       aliases:
+  #         - factorial_als
+  #   restart: always
 
   jaeger-allinone:
     image: jaegertracing/all-in-one:latest
@@ -117,7 +117,7 @@ services:
     image: application2:latest
     ports:
       # - 8082:8080
-      - 8001:8000
+      - 8001:8001
     networks:
       public:
         aliases:

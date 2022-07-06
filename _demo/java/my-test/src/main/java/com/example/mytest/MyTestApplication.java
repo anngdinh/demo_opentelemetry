@@ -1,8 +1,14 @@
 package com.example.mytest;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Scanner;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,13 +38,12 @@ public class MyTestApplication {
 	OpenTelemetry openTelemetry;
 
 	// // Tell OpenTelemetry to inject the context in the HTTP headers
-	// TextMapSetter<HttpURLConnection> setter = new
-	// TextMapSetter<HttpURLConnection>() {
-	// @Override
-	// public void set(HttpURLConnection carrier, String key, String value) {
-	// // Insert the context as Header
-	// carrier.setRequestProperty(key, value);
-	// }
+	// TextMapSetter<HttpURLConnection> setter = new TextMapSetter<HttpURLConnection>() {
+	// 	@Override
+	// 	public void set(HttpURLConnection carrier, String key, String value) {
+	// 		// Insert the context as Header
+	// 		carrier.setRequestProperty(key, value);
+	// 	}
 	// };
 
 	TextMapGetter<HttpExchange> getter = new TextMapGetter<>() {
@@ -154,9 +159,66 @@ public class MyTestApplication {
 	}
 
 	@GetMapping("/4")
-	public String hello4() {
-		// handle(getter);
-		return "Extract";
+	public void hello4() {
+		// Tell OpenTelemetry to inject the context in the HTTP headers
+		TextMapSetter<HttpURLConnection> setter = new TextMapSetter<HttpURLConnection>() {
+			@Override
+			public void set(HttpURLConnection carrier, String key, String value) {
+				// Insert the context as Header
+				carrier.setRequestProperty(key, value);
+			}
+		};
+
+		try {
+			URL url = new URL("http://java2_als:8001/test");
+			Span outGoing = tracer.spanBuilder("java2_als/test").setSpanKind(SpanKind.CLIENT).startSpan();
+			try (Scope scope = outGoing.makeCurrent()) {
+				// Use the Semantic Conventions.
+				// (Note that to set these, Span does not *need* to be the current instance in
+				// Context or Scope.)
+				outGoing.setAttribute(SemanticAttributes.HTTP_METHOD, "GET");
+				outGoing.setAttribute(SemanticAttributes.HTTP_URL, url.toString());
+
+				try {
+					HttpURLConnection transportLayer = (HttpURLConnection) url.openConnection();
+					// Inject the request with the *current* Context, which contains our current
+					// Span.
+					openTelemetry.getPropagators().getTextMapPropagator().inject(Context.current(), transportLayer,
+							setter);
+					// Make outgoing call
+					transportLayer.setRequestMethod("GET");
+					// transportLayer.setRequestProperty("User-Agent", USER_AGENT);
+					int responseCode = transportLayer.getResponseCode();
+					System.out.println("GET Response Code :: " + responseCode);
+					if (responseCode == HttpURLConnection.HTTP_OK) { // success
+						BufferedReader in = new BufferedReader(new InputStreamReader(
+								transportLayer.getInputStream()));
+						String inputLine;
+						StringBuffer response = new StringBuffer();
+
+						while ((inputLine = in.readLine()) != null) {
+							response.append(inputLine);
+						}
+						in.close();
+
+						// print result
+						System.out.println(response.toString());
+					} else {
+						System.out.println("GET request not worked");
+					}
+
+				} catch (IOException ie) {
+					ie.printStackTrace();
+				}
+
+			} finally {
+				outGoing.end();
+			}
+		} catch (
+
+		MalformedURLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public class SimpleHandler implements HttpHandler {
@@ -167,7 +229,7 @@ public class MyTestApplication {
 					.extract(Context.current(), httpExchange, getter);
 			try (Scope scope = extractedContext.makeCurrent()) {
 				// Automatically use the extracted SpanContext as parent.
-				Span serverSpan = tracer.spanBuilder("GET /resource")
+				Span serverSpan = tracer.spanBuilder("GET /4")
 						.setSpanKind(SpanKind.SERVER)
 						.startSpan();
 				try {
@@ -175,7 +237,7 @@ public class MyTestApplication {
 					serverSpan.setAttribute(SemanticAttributes.HTTP_METHOD, "GET");
 					serverSpan.setAttribute(SemanticAttributes.HTTP_SCHEME, "http");
 					serverSpan.setAttribute(SemanticAttributes.HTTP_HOST, "localhost:8080");
-					serverSpan.setAttribute(SemanticAttributes.HTTP_TARGET, "/resource");
+					serverSpan.setAttribute(SemanticAttributes.HTTP_TARGET, "/4");
 					// Serve the request
 					// ...
 				} finally {

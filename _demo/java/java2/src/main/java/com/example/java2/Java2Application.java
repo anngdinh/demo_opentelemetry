@@ -66,7 +66,7 @@ public class Java2Application {
 
 		Java2Application example = new Java2Application();
 
-		HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
+		HttpServer server = HttpServer.create(new InetSocketAddress(8001), 0);
 		server.createContext("/test", example.new SimpleHandler());
 		server.setExecutor(null); // creates a default executor
 		server.start();
@@ -80,7 +80,7 @@ public class Java2Application {
 					.extract(Context.current(), httpExchange, getter);
 			try (Scope scope = extractedContext.makeCurrent()) {
 				// Automatically use the extracted SpanContext as parent.
-				Span serverSpan = tracer.spanBuilder("GET /resource")
+				Span serverSpan = tracer.spanBuilder("GET /test")
 						.setSpanKind(SpanKind.SERVER)
 						.startSpan();
 				try {

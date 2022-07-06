@@ -25,6 +25,10 @@ mvn spring-boot:run
 
 docker rm -f $(docker ps -a -q)
 docker exec -it demo_client sh
+docker exec -it application sh
+
+# curl
+apt update && apt upgrade && apt install curl
 
 
 

@@ -7,6 +7,8 @@ package com.example.mytest;
 
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
+import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.exporter.jaeger.JaegerGrpcSpanExporter;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.resources.Resource;
@@ -45,7 +47,9 @@ class ExampleConfiguration {
         .addSpanProcessor(SimpleSpanProcessor.create(jaegerExporter))
         .setResource(Resource.getDefault().merge(serviceNameResource))
         .build();
-    OpenTelemetrySdk openTelemetry = OpenTelemetrySdk.builder().setTracerProvider(tracerProvider).build();
+    OpenTelemetrySdk openTelemetry = OpenTelemetrySdk.builder().setTracerProvider(tracerProvider)
+        .setPropagators(ContextPropagators.create(W3CTraceContextPropagator.getInstance()))
+        .build();
 
     // it's always a good idea to shut down the SDK cleanly at JVM exit.
     Runtime.getRuntime().addShutdownHook(new Thread(tracerProvider::close));
