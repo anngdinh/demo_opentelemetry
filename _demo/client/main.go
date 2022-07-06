@@ -83,6 +83,28 @@ func main() {
 				"message": result.Message,
 			})
 		})
+
+		router.GET("/ping2", func(c *gin.Context) {
+			result := Result{}
+			req := resty.R().SetHeader("Content-Type", "application/json")
+			ctx := req.Context()
+			span := trace.SpanFromContext(ctx)
+
+			defer span.End()
+
+			otel.GetTextMapPropagator().Inject(c.Request.Context(), propagation.HeaderCarrier(req.Header))
+			resp, err := req.Get("http://factorial_als:8000/pong")
+
+			if err != nil {
+				fmt.Println("---------error get /pong-----------")
+				// log.Fatal(err)
+			}
+
+			json.Unmarshal([]byte(resp.String()), &result)
+			c.IndentedJSON(200, gin.H{
+				"message": result.Message,
+			})
+		})
 	}
 	router.Run(":8080")
 

@@ -24,6 +24,7 @@ https://github.com/open-telemetry/opentelemetry-go/discussions/2629
 mvn spring-boot:run
 
 docker rm -f $(docker ps -a -q)
+docker exec -it demo_client sh
 
 
 

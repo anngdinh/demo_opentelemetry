@@ -63,26 +63,26 @@ services:
   #       aliases:
   #         - service1
 
-  # factorial:
-  #   build:
-  #     context: ./factorial
-  #   stdin_open: true
-  #   tty: true
-  #   ports:
-  #     - 8088:8088
-  #   depends_on:
-  #     # - factorial
-  #     - jaeger-allinone
-  #     # - api
-  #     # - db
-  #     # - jaeger-collector
-  #     # - jaeger-agent
-  #     # - jaeger-query
-  #   networks:
-  #     public:
-  #       aliases:
-  #         - factorial_als
-  #   restart: always
+  factorial:
+    build:
+      context: ./factorial
+    stdin_open: true
+    tty: true
+    ports:
+      - 8088:8088
+    depends_on:
+      # - factorial
+      - jaeger-allinone
+      # - api
+      # - db
+      # - jaeger-collector
+      # - jaeger-agent
+      # - jaeger-query
+    networks:
+      public:
+        aliases:
+          - factorial_als
+    restart: always
 
   jaeger-allinone:
     image: jaegertracing/all-in-one:latest
@@ -108,6 +108,20 @@ services:
       public:
         aliases:
           - java_als
+
+  java2:
+    container_name: application2
+    build:
+      context: java/java2
+      dockerfile: Dockerfile
+    image: application2:latest
+    ports:
+      # - 8082:8080
+      - 8001:8000
+    networks:
+      public:
+        aliases:
+          - java2_als
 
   # db:
   #   image: mysql:8.0
