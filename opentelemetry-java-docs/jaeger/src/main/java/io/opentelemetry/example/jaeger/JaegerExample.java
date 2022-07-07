@@ -37,7 +37,7 @@ public final class JaegerExample {
       System.exit(1);
     }
     String jaegerEndpoint = args[0];
-    System.println(jaegerEndpoint);
+    System.out.println(jaegerEndpoint);
 
     // it is important to initialize your SDK as early as possible in your application's lifecycle
     OpenTelemetry openTelemetry = ExampleConfiguration.initOpenTelemetry(jaegerEndpoint);

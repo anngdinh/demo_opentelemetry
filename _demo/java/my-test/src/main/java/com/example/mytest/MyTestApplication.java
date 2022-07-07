@@ -159,7 +159,7 @@ public class MyTestApplication {
 	}
 
 	@GetMapping("/4")
-	public void hello4() {
+	public void hello4(String url_str, String spanName) {
 		// Tell OpenTelemetry to inject the context in the HTTP headers
 		TextMapSetter<HttpURLConnection> setter = new TextMapSetter<HttpURLConnection>() {
 			@Override
@@ -170,8 +170,8 @@ public class MyTestApplication {
 		};
 
 		try {
-			URL url = new URL("http://java2_als:8001/test");
-			Span outGoing = tracer.spanBuilder("java2_als/test").setSpanKind(SpanKind.CLIENT).startSpan();
+			URL url = new URL(url_str);
+			Span outGoing = tracer.spanBuilder(spanName).setSpanKind(SpanKind.CLIENT).startSpan();
 			try (Scope scope = outGoing.makeCurrent()) {
 				// Use the Semantic Conventions.
 				// (Note that to set these, Span does not *need* to be the current instance in
@@ -240,6 +240,8 @@ public class MyTestApplication {
 					serverSpan.setAttribute(SemanticAttributes.HTTP_TARGET, "/4");
 					// Serve the request
 					// ...
+					hello4("http://java2_als:8001/test", "java2/4");
+					hello4("http://factorial_als:8088/pong", "factorial_als:8088/pong");
 				} finally {
 					serverSpan.end();
 				}

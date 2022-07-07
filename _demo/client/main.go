@@ -79,8 +79,11 @@ func main() {
 			}
 
 			json.Unmarshal([]byte(resp.String()), &result)
+			fmt.Println(resp)
+			fmt.Println(result)
 			c.IndentedJSON(200, gin.H{
 				"message": result.Message,
+				// "message2": resp,
 			})
 		})
 
@@ -93,10 +96,10 @@ func main() {
 			defer span.End()
 
 			otel.GetTextMapPropagator().Inject(c.Request.Context(), propagation.HeaderCarrier(req.Header))
-			resp, err := req.Get("http://factorial_als:8000/pong")
+			resp, err := req.Get("http://factorial_als:8088/5")
 
 			if err != nil {
-				fmt.Println("---------error get /pong-----------")
+				fmt.Println("---------error get /5-----------")
 				// log.Fatal(err)
 			}
 
